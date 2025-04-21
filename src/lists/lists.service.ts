@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { CreateListDto } from './dto/create-list.dto';
+import { UpdateListDto } from './dto/update-list.dto';
 
 @Injectable()
 export class ListsService {
@@ -22,11 +23,23 @@ export class ListsService {
       .from('lists')
       .select('*')
       .eq('user_id', userId);
-
     if (error) throw new Error(error.message);
     return data;
   }
 
+  async update(userId: string, id: string, dto: UpdateListDto) {
+    const { data, error } = await this.supabase
+      .from('lists')
+      .update(dto)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select()
+      .single();
+  
+    if (error) throw new Error(error.message);
+    return data;
+  }
+  
   async findOne(userId: string, id: string) {
     const { data, error } = await this.supabase
       .from('lists')
